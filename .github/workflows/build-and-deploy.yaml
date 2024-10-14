@@ -1,20 +1,36 @@
-name: Build
+name: Build and Deploy
+
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+    push:
+        branches: [main]
+
 jobs:
-  sonarcloud:
-    name: SonarCloud
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Analyze with SonarCloud
+              uses: SonarSource/sonarcloud-github-action@v1
+              with:
+                sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: 16
+            - name: Install dependencies
+              run: npm install
+            - name: Build
+              run: npm run build
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Deploy to GitHub Pages
+              uses: actions/deploy-github-pages@v1
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                folder: public
