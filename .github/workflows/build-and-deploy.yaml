@@ -12,6 +12,9 @@ jobs:
             - name: Install dependencies
               run: 
                   yarn
+            - name: Test and coverage
+              run: 
+                  yarn jest --coverage
             - name: Analyze with SonarCloud
               uses: SonarSource/sonarcloud-github-action@v1
               env:
