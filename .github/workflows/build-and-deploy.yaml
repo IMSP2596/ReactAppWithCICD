@@ -13,6 +13,7 @@ jobs:
             - name: Analyze with SonarCloud
               uses: SonarSource/sonarcloud-github-action@v1
               env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
             - name: Set up Node.js
               uses: actions/setup-node@v3
